@@ -426,7 +426,10 @@ class Json_Controller extends Template_Controller
 					. "reports/view/" . $marker->id . "'>".$encoded_title."</a>")) . "\",";
 			$json_single .= "\"link\": \"".url::base()."reports/view/".$marker->id."\", ";
 			$json_single .= "\"category\":[0], ";
-			$json_single .= "\"thumb\": \"$thumb\", ";
+			if(isset($thumb))
+			{
+				$json_single .= "\"thumb\": \"$thumb\", ";
+			}
 			$json_single .= "\"timestamp\": \"" . strtotime($marker->incident_date) . "\"";
 			
 			// Get Incident Geometries
@@ -446,7 +449,10 @@ class Json_Controller extends Template_Controller
 					. "reports/view/" . $marker->id . "'>".$encoded_title."</a>")) . "\",";
 				$json_item .= "\"link\": \"".url::base()."reports/view/".$marker->id."\", ";
 				$json_item .= "\"category\":[0], ";
-				$json_item .= "\"thumb\": \"$thumb\", ";
+				if(isset($thumb))
+				{
+					$json_item .= "\"thumb\": \"$thumb\", ";
+				}
 				$json_item .= "\"timestamp\": \"" . strtotime($marker->incident_date) . "\"";
 				$json_item .= "},\"geometry\":";
 				$json_item .= "{\"type\":\"Point\", ";

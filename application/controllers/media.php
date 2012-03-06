@@ -89,15 +89,16 @@ class Media_Controller extends Controller {
         header('Expires: '.gmdate("D, d M Y H:i:s", time() + $expiry_time).' GMT');
         if (isset($mtime))
         {
-          header('ETag: '.$mtime);
+          	header('ETag: '.$mtime);
+			header("Last-Modified: ".gmdate("D, d M Y H:i:s", $mtime)." GMT");
         }
-        header("Last-Modified: ".gmdate("D, d M Y H:i:s", $mtime)." GMT");
+        
 
         $oldetag = isset($_SERVER['HTTP_IF_NONE_MATCH'])?trim($_SERVER['HTTP_IF_NONE_MATCH']):'';
         $oldmtime = isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])?$_SERVER['HTTP_IF_MODIFIED_SINCE']:'';
         $accencoding = isset($_SERVER['HTTP_ACCEPT_ENCODING'])?$_SERVER['HTTP_ACCEPT_ENCODING']:'';
 
-        if (($oldmtime AND strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) == $oldmtime) OR $oldetag == $mtime)
+        if (($oldmtime AND strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) == $oldmtime) OR $oldetag == isset($mtime)? NULL: $mtime)
         {
             header($_SERVER['SERVER_PROTOCOL'] . ' 304 Not Modified');
         }

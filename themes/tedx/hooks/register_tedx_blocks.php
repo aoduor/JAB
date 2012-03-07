@@ -6,7 +6,7 @@ class tedx_reports_block {
 	{
 		$block = array(
 			"classname" => "tedx_reports_block",
-			"name" => "TEDx Reports",
+			"name" => "Just A Band Reports",
 			"description" => "List the 10 latest reports in the system"
 		);
 		

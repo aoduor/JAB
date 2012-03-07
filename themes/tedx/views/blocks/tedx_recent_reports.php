@@ -38,7 +38,7 @@
 			<?php $i++;
 			} else {
 			?>
-		 	<div class="report-image"><img src="<?php echo url::file_loc('img')."media/img/report-thumb-default.jpg"; ?>" style="max-width:160px;max-height:109px;"/></div>
+		 	<div class="report-image"><img src="<?php echo url::file_loc('img')."media/img/report-thumb-default.jpg"; ?>" width="160"/></div>
 			<?php $i++;
 			}?>
 			<div  class="report-date"><?php echo $incident_date; ?></div>

@@ -117,7 +117,6 @@
 							</a>
 							<a href="<?php echo url::site(); ?>reports/view/<?php echo $incident_id; ?>#discussion" class="r_comments">
 								<?php echo $comment_count; ?></a> 
-								<?php echo $incident_verified; ?>
 							</h3>
 						<p class="r_date r-3 bottom-cap"><?php echo $incident_date; ?></p>
 						<div class="r_description"> <?php echo $incident_description; ?>  

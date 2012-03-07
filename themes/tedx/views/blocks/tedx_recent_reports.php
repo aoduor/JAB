@@ -17,23 +17,36 @@
 			$incident_location = $incident->location->location_name;
 			$incident_category = $incident->category->current() ? $incident->category->current()->category_title : '';
 			$incident_video = false;
+			$incident_photo = false;
 			if (isset($incident_videos[$incident_id][0]))
 			{
 				$incident_video = $incident_videos[$incident_id][0]['thumb'] ? $incident_videos[$incident_id][0]['thumb'] : $video_embed->thumb($incident_videos[$incident_id][0]['link']);
 			}
-			if ($incident_video) {
+			if(isset($incident_photos[$incident_id][0]))
+			{
+				$incident_photo = $incident_photos[$incident_id][0]['large'];
+			}
 		?>
 		<div class="report <?php echo "col-".($i % 5); ?>">
 			<a href="<?php echo url::site() . 'reports/view/' . $incident_id; ?>"> 
-			<div class="report-image"><img src="<?php echo $incident_video ?>" width="160" /></div>
+			<?php if ($incident_video) {?>
+			<div class="report-image"><img src="<?php echo $incident_video; ?>" width="160" /></div>
+			<?php
+			$i++; 
+			} else if($incident_photo) {?>
+			<div class="report-image"><img src="<?php echo $incident_photo; ?>" width="160" /></div>
+			<?php $i++;
+			} else {
+			?>
+		 	<div class="report-image"><img src="<?php echo url::file_loc('img')."media/img/report-thumb-default.jpg"; ?>" style="max-width:160px;max-height:109px;"/></div>
+			<?php $i++;
+			}?>
 			<div  class="report-date"><?php echo $incident_date; ?></div>
 			<div  class="report-location"><?php echo $incident_category ?></div>
 			<div class="report-title"><?php echo $incident_title ?></div>
 			</a>
 		</div>
 		<?php
-			$i++;
-			}
 		}
 		?>
 	<a class="more" href="<?php echo url::site() . 'reports/' ?>"><?php echo Kohana::lang('ui_main.view_more'); ?></a>

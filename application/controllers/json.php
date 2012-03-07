@@ -210,11 +210,26 @@ class Json_Controller extends Template_Controller
 		foreach ($incidents as $incident)
 		{
 			$thumb = "";
+			$media_link = "";
 			
+			// Check for a video tied to this report
 			$media = ORM::factory('media')->where('incident_id',$incident->incident_id)->where('media_type',2)->limit(1)->find();
+			
+			// Also check if there are any images tied to this report
+			$images= ORM::factory('media')->where('incident_id',$incident->incident_id)->where('media_type',1)->limit(1)->find();
+			
+			// If we get a video
 			if ($media->loaded)
 			{
 				$thumb = $media->media_thumb ? $media->media_thumb : $this->video_embed->thumb($media->media_link);
+				$media_link = $media->media_link;
+			}
+			// If we didn't get a video, but we got a photo
+			else if($images->loaded)
+			{
+				$prefix = url::base().Kohana::config('upload.relative_directory');
+				$thumb = $prefix."/".$images->media_link;
+				$media_link = $images->media_link;
 			}
 			
 			$markers[] = array(
@@ -223,7 +238,7 @@ class Json_Controller extends Template_Controller
 				'latitude' => $incident->latitude,
 				'longitude' => $incident->longitude,
 				'thumb' => $thumb,
-				'media_link' => $media->media_link
+				'media_link' => $media_link
 			);
 		}
 

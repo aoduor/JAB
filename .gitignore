@@ -7,4 +7,3 @@ application/cache/*
 media/uploads/*
 application/config/database.php
 tests/phpunit/phpunit.xml
-

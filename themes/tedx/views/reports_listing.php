@@ -43,6 +43,7 @@
 			<?php
 				foreach ($incidents as $incident)
 				{
+					$video_embed = new VideoEmbed();
 					$incident = ORM::factory('incident', $incident->incident_id);
 					$incident_id = $incident->id;
 					$incident_title = $incident->incident_title;
@@ -62,16 +63,31 @@
 
 					$incident_thumb = url::file_loc('img')."media/img/report-thumb-default.jpg";
 					$media = $incident->media;
-					if ($media->count())
+					$count = $media->count();
+					if ($count)
 					{
-						foreach ($media as $photo)
+						foreach($media as $photo)
 						{
-							if ($photo->media_thumb)
-							{ // Get the first thumb
-								$incident_thumb = url::convert_uploaded_to_abs($photo->media_thumb);
-								break;
+							if($count == 1)
+							{
+								if ($photo->media_type == 1)
+								{ 
+									// Get the first thumb
+									$incident_thumb = url::convert_uploaded_to_abs($photo->media_thumb);
+									break;
+								}
+							
+								elseif($photo->media_type == 2)
+								{
+									$incident_thumb = $video_embed->thumb($photo->media_link);
+								}
+							}
+							else
+							{
+								$incident_thumb = $photo->media_thumb? url::convert_uploaded_to_abs($photo->media_thumb) : $video_embed->thumb($photo->media_link);
 							}
 						}
+					
 					}
 				?>
 				<div id="<?php echo $incident_id ?>" class="rb_report">

@@ -57,7 +57,7 @@ a:hover {
 }
 
 /* structural divs */
-body#page {background: url("../../tedx/images/bkgd.png") }
+body#page {background: url("../../jab/images/bkgd.png") }
 
 /*div#middle { background:transparent url(../images/bg_top-cap.png) top no-repeat; }*/
 div#middle { background: transparent; }
@@ -144,12 +144,12 @@ div#header {
 	padding: 16px 36px 36px 36px;
 	height: auto;
 	box-shadow: 0px 5px 15px 0px rgba(78,78,78,0.3);
-	background: -moz-linear-gradient(center top , #282828, #171717) repeat scroll 0 0 transparent;
+	background: -moz-linear-gradient(center top , #282828, #171717) repeat scroll 0 0 #111;
     border-top: 1px solid #000000;
 	border-radius: 5px;
 }
 
-body.page-main div#header { margin: 0 0 0 -480px; padding: 16px 36px 36px 36px; background: -moz-linear-gradient(center top , #282828, #171717) repeat scroll 0 0 transparent;
+body.page-main div#header { margin: 0 0 0 -480px; padding: 16px 36px 36px 36px; background: -moz-linear-gradient(center top , #282828, #171717) repeat scroll 0 0 #111;
     border-top: 1px solid #000000; position: absolute; top: 0px; left: 50%; z-index: 10; width: 888px /*960-(36*2)*/; height: auto; -moz-border-radius-topleft: 0px;
 -moz-border-radius-topright: 0px;
 -moz-border-radius-bottomright: 5px;

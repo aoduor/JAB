@@ -1,10 +1,10 @@
-Theme Name: TEDx
+Theme Name: Just A Band
 Description: Map is front-and center with a simplified home page.
-Adapted from Unicorn by Caleb Bell
+Adapted from Tedx by Robbie Mackay
 Demo: http://www.ushahidi.com
 Version: 1.0
-Author: Robbie Mackay
-Author Email: robbie@ushahidi.com
+Author: Jepchumba Thomas
+Author Email: jepchumba@ushahidi.com
 
 
 ===CHANGELOG===

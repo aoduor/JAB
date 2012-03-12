@@ -24,7 +24,7 @@ class jab_reports_block {
 			->limit('8')->count_all();
 		$incidents = ORM::factory('incident')
 			->where('incident_active', '1')
-			->limit('10')
+			->limit('5')
 			->orderby('incident_date', 'desc')
 			->find_all();
 

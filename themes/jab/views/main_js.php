@@ -207,9 +207,18 @@
 				$.getJSON(baseUrl+'json/single/'+selectedFeature.attributes.incident_ids[selectedFeature.current_id], function (data){
 					// Replacing popup content
 					featureid = data.features.length -1;
+					images = "<?php echo url::file_loc('img')."media/img/report-thumb-default.jpg"; ?>";
 					thumb = "<div class=\"infowindow_image\"><a href='"+data.features[0].properties.link+"'>";
-					thumb += "<img src=\""+data.features[featureid].properties.thumb+"\" width=\"240\" /></a></div>";
-					$('.infowindow .infowindow_image').replaceWith(thumb);
+					if(data.features[featureid].properties.thumb)
+					{
+						thumb += "<img src=\""+data.features[featureid].properties.thumb+"\" width=\"240\" /></a></div>";
+						$('.infowindow .infowindow_image').replaceWith(thumb);
+					}
+					else
+					{
+						thumb += "<img src=\""+images+"\" width=\"240\" /></a></div>";
+						$('.infowindow .infowindow_image').replaceWith(thumb);
+					}
 					info = "<div class=\"infowindow_list\">"+data.features[featureid].properties.name+"</div>";
 					$('.infowindow .infowindow_list').replaceWith(info);
 					
@@ -233,9 +242,18 @@
 				$.getJSON(baseUrl+'json/single/'+selectedFeature.attributes.incident_ids[selectedFeature.current_id], function (data){
 					// Replacing popup content
 					featureid = data.features.length -1;
+					images = "<?php echo url::file_loc('img')."media/img/report-thumb-default.jpg"; ?>";
 					thumb = "<div class=\"infowindow_image\"><a href='"+data.features[0].properties.link+"'>";
-					thumb += "<img src=\""+data.features[featureid].properties.thumb+"\" width=\"240\" /></a></div>";
-					$('.infowindow .infowindow_image').replaceWith(thumb);
+					if(data.features[featureid].properties.thumb)
+					{
+						thumb += "<img src=\""+data.features[featureid].properties.thumb+"\" width=\"240\" /></a></div>";
+						$('.infowindow .infowindow_image').replaceWith(thumb);
+					}
+					else
+					{
+						thumb += "<img src=\""+images+"\" width=\"240\" /></a></div>";
+						$('.infowindow .infowindow_image').replaceWith(thumb);
+					}
 					info = "<div class=\"infowindow_list\">"+data.features[featureid].properties.name+"</div>";
 					$('.infowindow .infowindow_list').replaceWith(info);
 					

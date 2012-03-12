@@ -345,7 +345,7 @@ class Json_Controller extends Template_Controller
 			$json_item .= "\"category\":[0], ";
 			$json_item .= "\"color\": \"".$color."\", ";
 			$json_item .= "\"icon\": \"".$icon."\", ";
-			$json_item .= "\"thumb\": \"".$single['thumb']."\", ";
+			$json_item .= "\"thumb\": \"".$thumb."\", ";
 			//$json_item .= "\"video\": ".$video.", ";
 			$json_item .= "\"timestamp\": \"0\", ";
 			$json_item .= "\"count\": \"" . 1 . "\"";
@@ -393,10 +393,23 @@ class Json_Controller extends Template_Controller
 			// @todo Get this fixed
 			$marker = ORM::factory('incident', $incident_id);
 			
+			
+			// Check for a video tied to this report
 			$media = ORM::factory('media')->where('incident_id',$incident_id)->where('media_type',2)->limit(1)->find();
+
+			// Also check if there are any images tied to this report
+			$images= ORM::factory('media')->where('incident_id',$incident_id)->where('media_type',1)->limit(1)->find();
+			
+			// If we get a video
 			if ($media->loaded)
 			{
 				$thumb = $media->media_thumb ? $media->media_thumb : $this->video_embed->thumb($media->media_link);
+			}
+			// If we didn't get a video, but we got a photo
+			else if($images->loaded)
+			{
+				$prefix = url::base().Kohana::config('upload.relative_directory');
+				$thumb = $prefix."/".$images->media_link;
 			}
 			
 			// Get the incident/report date

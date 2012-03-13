@@ -56,6 +56,15 @@ $(function(){
 				<div class="content-blocks clearingfix">
 					<ul class="content-column">
 						<?php blocks::render(); ?>
+						<!-- Checkins -->
+						<?php if(Kohana::config('settings.checkins')) {?>
+						<li>
+						<div id="checkins" class="content-block">
+							<h5>Checkins</h5>
+						</div>
+						</li>
+						<?php }?>
+						<!-- /Checkins -->
 					</ul>
 				</div>
 				<!-- /content blocks -->

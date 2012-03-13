@@ -1039,15 +1039,13 @@
 					if(sqloffset != 0)
 					{
 						var newoffset = sqloffset - sqllimit;
-						$('div#cilist').html("<div style=\"text-align:center;\"><?php echo Kohana::lang('ui_main.no_checkins'); ?><br/><br/><a href=\"javascript:cilisting("+sqllimit+","+newoffset+");\">&lt;&lt; <?php echo Kohana::lang('ui_main.previous'); ?></a></div>");
+						$('div#checkins').html("<div style=\"text-align:center;\"><?php echo Kohana::lang('ui_main.no_checkins'); ?><br/><br/><a href=\"javascript:cilisting("+sqllimit+","+newoffset+");\">&lt;&lt; <?php echo Kohana::lang('ui_main.previous'); ?></a></div>");
 					}else{
-						$('div#cilist').html("<div style=\"text-align:center;\">No checkins to display.</div>");
+						$('div#checkins').html("<div style=\"text-align:center;\">No checkins to display.</div>");
 					}
 
 					return;
 				}
-				
-				$('div#cilist').html("");
 				
 				var user_colors = new Array();
 				// Get colors
@@ -1057,27 +1055,21 @@
 				
 				$.each(data.payload.checkins, function(i,item){
 					
-					if(i == 0)
-					{
-						$('div#cilist').append("<div class=\"ci_checkin\" class=\"ci_id_"+item.id+"\"style=\"border:none\"><a name=\"ci_id_"+item.id+"\" />");
-					}else{
-						$('div#cilist').append("<div class=\"ci_checkin\" class=\"ci_id_"+item.id+"\" style=\"padding-bottom:5px;margin-bottom:5px;\"><a name=\"ci_id_"+item.id+"\" />");
-					}
-					
+					$('div#checkins').append("<div id=\"check\" class=\"report col-"+i%5+"\">");
 					if(item.media === undefined)
 					{
-						// Tint the color a bit
-						$('div#cilist').append("<div class=\"ci_colorblock ci_shorterblock\" style=\"background-color:#"+user_colors[item.user]+";\"><div class=\"ci_colorfade\"></div></div>");
-					}else{
-						// Show image
-						$('div#cilist').append("<div class=\"ci_colorblock ci_tallerblock\" style=\"background-color:#"+user_colors[item.user]+";\"><div class=\"ci_imgblock\"><a href=\""+item.media[0].link+"\" rel=\"lightbox-group1\" title=\""+item.msg+"\"><img src=\""+item.media[0].thumb+"\" height=\"59\" /></a></div></div>");
+						// If there's no image, show default image icon
+						$('div#check.report.col-'+i%5+'').append("<div class=\"report-image\"><img src=\"<?php echo url::file_loc('img')."media/img/report-thumb-default.jpg"; ?>\" width=\"160\"/></div>");
 					}
-					
-					$('div#cilist').append("<div style=\"float:right;width:24px;height:24px;margin-right:10px;\"><a class=\"ci_moredetails\" reportid=\""+item.id+"\" href=\"javascript:externalZeroIn("+item.lon+","+item.lat+",16,"+item.id+");\"><img src=\"<?php echo url::file_loc('img'); ?>media/img/pin_trans.png\" width=\"24\" height=\"24\" /></a></div>");
+					else
+					{
+						// Show image
+						$('div.#check.report.col-'+i%5+'').append("<div class=\"report-image\"><img src=\""+item.media[0].thumb+"\" width=\"160\" /></div>");
+					}
 					
 					$.each(data.payload.users, function(j,useritem){
 						if(useritem.id == item.user){
-							$('div#cilist').append("<div style=\"font-size:14px;width:215px;padding-top:0px;\"><a href=\"<?php echo url::site(); ?>profile/user/"+useritem.username+"\">"+useritem.name+"</a></div>");
+							$('div#check.report.col-'+i%5+'').append("<div class=\"report-title\"><a href=\"<?php echo url::site(); ?>profile/user/"+useritem.username+"\">"+useritem.name+"</a></div>");
 						}
 					});
 					
@@ -1085,9 +1077,9 @@
 					
 					if(item.msg == "")
 					{
-						$('div#cilist').append("<div class=\"ci_cimsg\"><small><em>"+$.timeago(utcDate)+"</em></small></div>");
+						$('div#check.report.col-'+i%5+'').append("<div class=\"report-location\"><small><em>"+$.timeago(utcDate)+"</em></small></div>");
 					}else{
-						$('div#cilist').append("<div class=\"ci_cimsg\">"+item.msg+"<br/><small><em>"+$.timeago(utcDate)+"</em></small></div>");
+						$('div#check.report.col-'+i%5+'').append("<div class=\"report-location\"><a href=\"javascript:externalZeroIn("+item.lon+","+item.lat+",16,"+item.id+");\">"+item.msg+"</a><br/><small><em>"+$.timeago(utcDate)+"</em></small></div>");
 					}
 					
 					if(item.comments !== undefined)
@@ -1101,40 +1093,39 @@
 							}else{
 								user_link = ''+comment.author+'';
 							}
-							$('div#cilist').append("<div style=\"clear:both\"></div>"+user_link+": "+comment.description+" <small>(<em>"+$.timeago(comment_utcDate)+"</em>)</small></div>");
+							$('div#check.report.col-'+i%5+'').append("<div style=\"clear:both\"></div>"+user_link+": "+comment.description+" <small>(<em>"+$.timeago(comment_utcDate)+"</em>)</small></div>");
 						});
 					}
-					
-					$('div#cilist').append("<div style=\"clear:both\"></div></div>");
-
 					showncount = showncount + 1;
+		
 				});
-				
+				$('div#checkins').append("<div style=\"clear:both\"></div>");
+				$('div#checkins').append("<div id=\"links\"></div>");
 				// Show previous link
 				if(sqloffset == 0)
 				{
-					$('div#cilist').append("<div style=\"float:left;\">&lt;&lt; <?php echo Kohana::lang('ui_main.previous'); ?></div>");
+					$('div#links').append("<div class=\"more\" style=\"float:left;\">&lt;&lt; <?php echo Kohana::lang('ui_main.previous'); ?></div>");
 				}else{
 					var newoffset = sqllimit - sqloffset;
-					$('div#cilist').append("<div style=\"float:left;\"><a href=\"javascript:cilisting("+sqllimit+","+newoffset+");\">&lt;&lt; <?php echo Kohana::lang('ui_main.previous'); ?></a></div>");
+					$('div#links').append("<div class=\"more\" style=\"float:left;\"><a href=\"javascript:cilisting("+sqllimit+","+newoffset+");\">&lt;&lt; <?php echo Kohana::lang('ui_main.previous'); ?></a></div>");
 				}
 				
 				// Show next link
 				if(showncount != sqllimit)
 				{
-					$('div#cilist').append("<div style=\"float:right;\"><?php echo Kohana::lang('ui_main.next'); ?> &gt;&gt;</div>");
+					$('div#links').append("<div class=\"more\" style=\"float:right;\"><?php echo Kohana::lang('ui_main.next'); ?> &gt;&gt;</div>");
 				}else{
 					var newoffset = sqloffset + sqllimit;
-					$('div#cilist').append("<div style=\"float:right;\"><a href=\"javascript:cilisting("+sqllimit+","+newoffset+");\"><?php echo Kohana::lang('ui_main.next'); ?> &gt;&gt;</a></div>");
+					$('div#links').append("<div class=\"more\" style=\"float:right;\"><a href=\"javascript:cilisting("+sqllimit+","+newoffset+");\"><?php echo Kohana::lang('ui_main.next'); ?> &gt;&gt;</a></div>");
 				}
 				
-				$('div#cilist').append("<div style=\"clear:both\"></div>");
+				$('div#checkins').append("<div style=\"clear:both\"></div>");
 
 			});
 			
 		}
 		
-		cilisting(3,0);
+		cilisting(5,0);
 		showCheckins();
 		
 		<?php

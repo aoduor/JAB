@@ -23,19 +23,20 @@ class Incidents_Api_Object extends Api_Object_Core {
 	 * @var string
 	 */
 	private $sort;
-
+	
 	/**
 	 * Column name by which to order the records
 	 * @var string
 	 */
 	private $order_field;
-
+	
+	
 	/**
 	 * Should the response include comments
 	 * @var string
 	 */
 	private $comments;
-
+	
 	/**
 	 * Constructor
 	 */
@@ -43,7 +44,7 @@ class Incidents_Api_Object extends Api_Object_Core {
 	{
 		parent::__construct($api_service);
 	}
-
+    
 	/**
 	 * Implementation of abstract method in parent
 	 *
@@ -61,10 +62,10 @@ class Incidents_Api_Object extends Api_Object_Core {
 		{
 			$this->by = $this->request['by'];
 		}
-
+		
 		// Check optional parameters
 		$this->_check_optional_parameters();
-
+		
 		// Begin task switching
 		switch ($this->by)
 		{
@@ -94,13 +95,13 @@ class Incidents_Api_Object extends Api_Object_Core {
 			case "latlon":
 				if ($this->api_service->verify_array_index($this->request, 'latitude')
 					AND $this->api_service->verify_array_index($this->request, 'longitude'))
-				{
+				{ 
 					// Build out the parameters
 					$params = array(
 						'l.latitude = '.$this->check_id_value($this->request['latitude']),
 						'l.longitude ='.$this->check_id_value($this->request['longitude'])
 					);
-
+					
 					// Fetch the incidents
 					$this->response_data = $this->_get_incidents($params);
 				}
@@ -109,7 +110,7 @@ class Incidents_Api_Object extends Api_Object_Core {
 					$this->set_error_message(array(
 						"error" => $this->api_service->get_error_msg(001, 'latitude or longitude')
 					));
-
+					
 					return;
 				}
 			break;
@@ -129,7 +130,7 @@ class Incidents_Api_Object extends Api_Object_Core {
 					$params = array(
 						'i.location_id = '.$this->check_id_value($this->request['id'])
 					);
-
+					
 					$this->response_data = $this->_get_incidents($params);
 				}
 			break;
@@ -139,7 +140,7 @@ class Incidents_Api_Object extends Api_Object_Core {
 				if ( ! $this->api_service->verify_array_index($this->request, 'name'))
 				{
 					$this->set_error_message(array(
-						"error" => $this->api_service->get_error_msg(001, 'name')
+						"error" => $this->api_service->get_error_msg(001, 'name') 
 					));
 
 					return;
@@ -149,7 +150,7 @@ class Incidents_Api_Object extends Api_Object_Core {
 					$params = array(
 						'l.location_name = "'.$this->request['name'].'"'
 					);
-
+					
 					$this->response_data = $this->_get_incidents($params);
 				}
 			break;
@@ -171,7 +172,7 @@ class Incidents_Api_Object extends Api_Object_Core {
 						'c.id = '.$category_id,
 						'c.category_visible = 1'
 					);
-
+					
 					$this->response_data = $this->_get_incidents($params);
 				}
 			break;
@@ -191,7 +192,7 @@ class Incidents_Api_Object extends Api_Object_Core {
 						'c.category_title LIKE "%'.$this->request['name'].'%"',
 						'c.category_visible = 1'
 					);
-
+					
 					$this->response_data = $this->_get_incidents($params);
 				}
 			break;
@@ -216,7 +217,7 @@ class Incidents_Api_Object extends Api_Object_Core {
 					$params = array(
 						'i.id > '.$this->check_id_value($this->request['id'])
 					);
-
+					
 					$this->response_data = $this->_get_incidents($params);
 				}
 			break;
@@ -236,7 +237,7 @@ class Incidents_Api_Object extends Api_Object_Core {
 					$params = array(
 						'i.id < '.$this->check_id_value($this->request['id'])
 					);
-
+					
 					$this->response_data = $this->_get_incidents($params);
 				}
 			break;
@@ -246,7 +247,7 @@ class Incidents_Api_Object extends Api_Object_Core {
 				$this->response_data = $this->_get_incidents_by_bounds($this->request['sw'],$this->request['ne'],$this->request['c']);
 			break;
 
-			// Error therefore set error message
+			// Error therefore set error message 
 			default:
 				$this->set_error_message(array(
 					"error" => $this->api_service->get_error_msg(002)
@@ -274,7 +275,7 @@ class Incidents_Api_Object extends Api_Object_Core {
 		if ($this->api_service->verify_array_index($this->request, 'limit'))
 		{
 			$this->set_list_limit($this->request['limit']);
-		}
+		}               
 
 		// Check if the orderfield parameter has been specified
 		if ($this->api_service->verify_array_index($this->request, 'orderfield'))
@@ -301,8 +302,8 @@ class Incidents_Api_Object extends Api_Object_Core {
 		{
 			$this->order_field = 'i.incident_date';
 		}
-
-
+		
+		
 		// Check if the 'comments' parameter has been specified
 		if ( ! $this->api_service->verify_array_index($this->request, 'comments'))
 		{
@@ -327,18 +328,18 @@ class Incidents_Api_Object extends Api_Object_Core {
 		// STEP 1.
 		// Get the incidents
 		$items = Incident_Model::get_incidents($where, $this->list_limit, $this->order_field, $this->sort);
-
+		
 		//No record found.
 		if ($items->count() == 0)
 		{
 			return $this->response(4, $this->error_messages);
 		}
-
+		
 		// Records found - proceed
-
+		
 		// Set the no. of records returned
 		$this->record_count = $items->count();
-
+		
 		// Will hold the XML/JSON string to return
 		$ret_json_or_xml = '';
 
@@ -347,7 +348,7 @@ class Incidents_Api_Object extends Api_Object_Core {
 		$json_report_categories = array();
 		$json_incident_media = array();
 		$upload_path = str_replace("media/uploads/", "", Kohana::config('upload.relative_directory')."/");
-
+		
 		//XML elements
 		$xml = new XmlWriter();
 		$xml->openMemory();
@@ -356,7 +357,7 @@ class Incidents_Api_Object extends Api_Object_Core {
 		$xml->startElement('payload');
 		$xml->writeElement('domain',$this->domain);
 		$xml->startElement('incidents');
-
+		
 		// Records found, proceed
 		// Store the incident ids
 		$incidents_ids = array();
@@ -364,26 +365,26 @@ class Incidents_Api_Object extends Api_Object_Core {
 		{
 			$incident_ids[] = $item->incident_id;
 		}
-
-		//
+		
+		// 
 		// STEP 2.
 		// Fetch the incident categories
-		//
+		// 
 		$this->query = "SELECT c.category_title AS categorytitle, ic.incident_id, "
 					. "c.id AS cid "
 					. "FROM ".$this->table_prefix."category AS c "
 					. "INNER JOIN ". $this->table_prefix."incident_category AS ic ON ic.category_id = c.id "
 					. "WHERE ic.incident_id IN (".implode(',', $incident_ids).")";
-
+		
 		// Execute the query
 		$incident_categories = $this->db->query($this->query);
-
+		
 		// To hold the incident category items
 		$category_items = array();
-
+		
 		// Temporary counter
 		$i = 1;
-
+		
 		// Fetch items into array
 		foreach ($incident_categories as $incident_category)
 		{
@@ -391,28 +392,28 @@ class Incidents_Api_Object extends Api_Object_Core {
 			$category_items[$incident_category->incident_id][$i]['categorytitle'] = $incident_category->categorytitle;
 			$i++;
 		}
-
+		
 		// Free temporary variables from memory
 		unset ($incident_categories);
-
-		//
+		
+		// 
 		// STEP 3.
 		// Fetch the media associated with all the incidents
-		//
+		// 
 		$this->query = "SELECT i.id AS incident_id, m.id AS mediaid, m.media_title AS mediatitle, "
 					. "m.media_type AS mediatype, m.media_link AS medialink, m.media_thumb AS mediathumb "
-					. "FROM ".$this->table_prefix."media AS m "
+					. "FROM ".$this->table_prefix."media AS m " 
 					. "INNER JOIN ".$this->table_prefix."incident AS i ON i.id = m.incident_id "
 					. "WHERE i.id IN (".implode(",", $incident_ids).")";
-
+		
 		$media_items_result = $this->db->query($this->query);
-
+		
 		// To store the fetched media items
 		$media_items = array();
-
+		
 		// Reset the temporary counter
 		$i = 1;
-
+		
 		// Fetch items into array
 		foreach ($media_items_result as $media_item)
 		{
@@ -423,29 +424,29 @@ class Incidents_Api_Object extends Api_Object_Core {
 			$media_items[$media_item->incident_id][$i]['mediathumb'] = $media_item->mediathumb;
 			$i++;
 		}
-
+		
 		// Free temporary variables
 		unset ($media_items_result, $i);
-
-		//
+		
+		// 
 		// STEP 4.
 		// Fetch the comments associated with the incidents
-		//
+		// 
 		if ($this->comments) {
 			$this->query = "SELECT id, incident_id, comment_author, comment_email, "
 						. "comment_description, comment_rating, comment_date "
 						. "FROM ".$this->table_prefix."comment AS c "
 						. "WHERE c.incident_id IN (".implode(',', $incident_ids).")";
-
+			
 			// Execute the query
 			$incident_comments = $this->db->query($this->query);
-
+			
 			// To hold the incident category items
 			$comment_items = array();
-
+			
 			// Temporary counter
 			$i = 1;
-
+			
 			// Fetch items into array
 			foreach ($incident_comments as $incident_comment)
 			{
@@ -462,10 +463,10 @@ class Incidents_Api_Object extends Api_Object_Core {
 			unset ($incident_comments);
 		}
 
-		//
+		// 
 		// STEP 5.
 		// Return XML
-		//
+		// 
 		foreach ($items as $item)
 		{
 			// Build xml file
@@ -487,7 +488,7 @@ class Incidents_Api_Object extends Api_Object_Core {
 			$xml->startElement('categories');
 
 			$json_report_categories[$item->incident_id] = array();
-
+			
 			// Check if the incident id exists
 			if (isset($category_items[$item->incident_id]))
 			{
@@ -501,8 +502,8 @@ class Incidents_Api_Object extends Api_Object_Core {
 								"title" => $category_item['categorytitle']
 							)
 						);
-					}
-					else
+					} 
+					else 
 					{
 						$xml->startElement('category');
 						$xml->writeElement('id',$category_item['cid']);
@@ -518,7 +519,7 @@ class Incidents_Api_Object extends Api_Object_Core {
 			$xml->startElement('comments');
 
 			$json_report_comments[$item->incident_id] = array();
-
+			
 			// Check if the incident id exists
 			if (isset($comment_items[$item->incident_id]))
 			{
@@ -529,8 +530,8 @@ class Incidents_Api_Object extends Api_Object_Core {
 						$json_report_comments[$item->incident_id][] = array(
 							"comment"=> $comment_item
 						);
-					}
-					else
+					} 
+					else 
 					{
 						$xml->startElement('comment');
 						$xml->writeElement('id',$comment_item['id']);
@@ -546,9 +547,10 @@ class Incidents_Api_Object extends Api_Object_Core {
 
 			// End comments
 			$xml->endElement();
-
+			
+			
 			$json_report_media[$item->incident_id] = array();
-
+			
 			if (count($media_items) > 0)
 			{
 				if (isset($media_items[$item->incident_id]) AND count($media_items[$item->incident_id]) > 0)
@@ -557,21 +559,12 @@ class Incidents_Api_Object extends Api_Object_Core {
 
 					foreach ($media_items[$item->incident_id] as $media_item)
 					{
-
-						$url_prefix = url::base().Kohana::config('upload.relative_directory').'/';
-
-						// If our media is not an image, we don't need to show an upload path
 						if ($media_item['mediatype'] != 1)
 						{
-							$upload_path = '';
-						}
-						elseif ($media_item['mediatype'] == 1 AND valid::url($media_item['medialink']) == TRUE)
-						{
-							// If our media is an img and is a valid URL, don't show the upload path or prefix
-							$upload_path = '';
-							$url_prefix = '';
+							$upload_path = "";
 						}
 
+						$url_prefix = url::base().Kohana::config('upload.relative_directory').'/';
 						if($this->response_type == 'json')
 						{
 							$json_report_media[$item->incident_id][] = array(
@@ -587,13 +580,13 @@ class Incidents_Api_Object extends Api_Object_Core {
 								// Grab that last key up there
 								$add_to_key = key($json_report_media[$item->incident_id]) + 1;
 
-								// Give a full absolute URL to the image
+								// Give a full absolute URL to the image 
 								$json_report_media[$item->incident_id][$add_to_key]["thumb_url"] =  $url_prefix.$upload_path.$media_item['mediathumb'];
 
 								$json_report_media[$item->incident_id][$add_to_key]["link_url"] = $url_prefix.$upload_path.$media_item['medialink'];
 							}
-						}
-						else
+						} 
+						else 
 						{
 							$xml->startElement('media');
 
@@ -601,31 +594,31 @@ class Incidents_Api_Object extends Api_Object_Core {
 							{
 								$xml->writeElement('id',$media_item['mediaid']);
 							}
-
+						
 							if( $media_item['mediatitle'] != "" )
 							{
 								$xml->writeElement('title', $media_item['mediatitle']);
 							}
-
+						
 							if( $media_item['mediatype'] != "" )
 							{
 								$xml->writeElement('type', $media_item['mediatype']);
 							}
-
-							if( $media_item['medialink'] != "" )
+						
+							if( $media_item['medialink'] != "" ) 
 							{
 								$xml->writeElement('link', $upload_path.$media_item['medialink']);
 							}
-
-							if( $media_item['mediathumb'] != "" )
+						
+							if( $media_item['mediathumb'] != "" ) 
 							{
 								$xml->writeElement('thumb', $upload_path.$media_item['mediathumb']);
 							}
-
+						
 							if( $media_item['mediathumb'] != "" AND $media_item['mediatype'] == 1 )
 							{
 								$add_to_key = key($json_report_media[$item->incident_id]) + 1;
-
+							
 								$xml->writeElement('thumb_url', $url_prefix.$upload_path.$media_item['mediathumb']);
 
 								$xml->writeElement('link_url', $url_prefix.$upload_path.$media_item['medialink']);
@@ -636,9 +629,9 @@ class Incidents_Api_Object extends Api_Object_Core {
 					$xml->endElement(); // Media
 				}
 			}
-
+			
 			$xml->endElement(); // End incident
-
+			
 			// Check for response type
 			if ($this->response_type == 'json')
 			{
@@ -655,14 +648,14 @@ class Incidents_Api_Object extends Api_Object_Core {
 						"locationname" => $item->location_name,
 						"locationlatitude" => $item->latitude,
 						"locationlongitude" => $item->longitude
-					),
-					"categories" => $json_report_categories[$item->incident_id],
+					),  
+					"categories" => $json_report_categories[$item->incident_id], 
 					"media" => $json_report_media[$item->incident_id],
 					"comments" => $json_report_comments[$item->incident_id]
 				);
 			}
 		}
-
+		
 		// Create the JSON array
 		$data = array(
 			"payload" => array(
@@ -671,13 +664,13 @@ class Incidents_Api_Object extends Api_Object_Core {
 			),
 			"error" => $this->api_service->get_error_msg(0)
 		);
-
+		
 		if ($this->response_type == 'json')
 		{
 			return $this->array_as_json($data);
 
-		}
-		else
+		} 
+		else 
 		{
 			$xml->endElement(); //end incidents
 			$xml->endElement(); // end payload
@@ -695,7 +688,7 @@ class Incidents_Api_Object extends Api_Object_Core {
 	 * Returns the number of reports in each category
 	 */
 	private function _get_incident_counts_per_category()
-	{
+	{       
 		$this->query = 'SELECT category_id, COUNT(category_id) AS reports FROM '.$this->table_prefix.'incident_category '
 					. 'WHERE incident_id IN (SELECT id FROM '.$this->table_prefix.'incident WHERE incident_active = 1) '
 					. 'GROUP BY category_id';
@@ -736,7 +729,8 @@ class Incidents_Api_Object extends Api_Object_Core {
 
 		echo $this->response_data;
 	}
-
+	
+    
 	/**
 	 * Get incidents within a certain lat,lon bounding box
 	 *
@@ -759,7 +753,7 @@ class Incidents_Api_Object extends Api_Object_Core {
 		{
 			$northeast = explode(",",$ne);
 		}
-
+		
 		// To hold the parameters
 		$params = array();
 		if ( count($southwest) == 2 AND count($northeast) == 2 )
@@ -768,7 +762,7 @@ class Incidents_Api_Object extends Api_Object_Core {
 			$lon_max = (float) $northeast[0];
 			$lat_min = (float) $southwest[1];
 			$lat_max = (float) $northeast[1];
-
+			
 			// Add parameters
 			array_push($params,
 				'l.latitude >= '.$lat_min,
@@ -777,7 +771,7 @@ class Incidents_Api_Object extends Api_Object_Core {
 				'l.longitude <= '.$lon_max
 			);
 		}
-
+		
 		// Fix for pulling categories using the bounding box
 		// Credits to Antonoio Lettieri http://github.com/alettieri
 		// Check if the specified category id is valid
@@ -785,14 +779,14 @@ class Incidents_Api_Object extends Api_Object_Core {
 		{
 			array_push($params, 'c.id = '.$c);
 		}
-
+		
 		return $this->_get_incidents($params);
-
+        
     }
 
 	/**
 	 * Gets the number of approved reports
-	 *
+	 * 
 	 * @param string response_type - XML or JSON
 	 * @return string
 	 */
@@ -833,7 +827,7 @@ class Incidents_Api_Object extends Api_Object_Core {
 			? $this->array_as_json($data)
 			: $this->array_as_xml($data, $this->replar);
 	}
-
+    
 	/**
 	 * Get an approximate geographic midpoint of al approved reports.
 	 *
@@ -844,11 +838,11 @@ class Incidents_Api_Object extends Api_Object_Core {
 	{
 		$json_latlon = array();
 
-		$this->query = 'SELECT AVG( latitude ) AS avglat, AVG( longitude )
-					AS avglon FROM '.$this->table_prefix.'location WHERE id IN
-					(SELECT location_id FROM '.$this->table_prefix.'incident WHERE
+		$this->query = 'SELECT AVG( latitude ) AS avglat, AVG( longitude ) 
+					AS avglon FROM '.$this->table_prefix.'location WHERE id IN 
+					(SELECT location_id FROM '.$this->table_prefix.'incident WHERE 
 					incident_active = 1)';
-
+        
 		$items = $this->db->query($this->query);
 
 		foreach ($items as $item)
@@ -857,24 +851,24 @@ class Incidents_Api_Object extends Api_Object_Core {
 			$longitude = $item->avglon;
 			break;
 		}
-
+		
 		if ($this->response_type == 'json')
 		{
 			$json_latlon[] = array(
-				"latitude" => $latitude,
+				"latitude" => $latitude, 
 				"longitude" => $longitude
 			);
 		}
 		else
 		{
 			$json_latlon['geographic_midpoint'] = array(
-				"latitude" => $latitude,
+				"latitude" => $latitude, 
 				"longitude" => $longitude
 			);
 
 			$replar[] = 'geographic_midpoint';
 		}
-
+		
 		// Create the JSON array
 		$data = array(
 			"payload" => array(

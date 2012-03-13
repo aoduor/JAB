@@ -26,35 +26,22 @@ class User_Model extends Auth_User_Model {
 	 * @param   string  riverid user id
 	 * @return  object  ORM object from saving the user
 	 */
-	public static function create_user($email,$password,$riverid=false,$name=false)
+	public static function create_user($email,$password,$riverid=false)
 	{
 		$user = ORM::factory('user');
 
 		$user->email = $email;
-		$user->username = User_Model::random_username();
+		$user->username = $email;
 		$user->password = $password;
-
-		if ($name != false)
-		{
-			$user->name = $name;
-		}
 
 		if ($riverid != false)
 		{
 			$user->riverid = $riverid;
 		}
 
-		// Add New Roles if:
-		//    1. We don't require admin to approve users (will be added when admin approves)
-		//    2. We don't require users to first confirm their email address (will be added
-		//       when user confirms if the admin doesn't have to first approve the user)
-		if (Kohana::config('settings.manually_approve_users') == 0
-			AND Kohana::config('settings.require_email_confirmation') == 0)
-		{
-			$user->add(ORM::factory('role', 'login'));
-			$user->add(ORM::factory('role', 'member'));
-		}
-
+		// Add New Roles
+		$user->add(ORM::factory('role', 'login'));
+		$user->add(ORM::factory('role', 'member'));
 		return $user->save();
 	}
 
@@ -164,6 +151,7 @@ class User_Model extends Auth_User_Model {
 			$post->add_callbacks('password' ,'User_Model::validate_password');
 		}
 
+
 		$post->add_rules('role','required','length[3,30]', 'alpha_numeric');
 		$post->add_rules('notify','between[0,1]');
 
@@ -255,23 +243,6 @@ class User_Model extends Auth_User_Model {
 		return ($utf8 === TRUE)
 			? (bool) preg_match('/^[-\pL\pN#@_]++$/uD', (string) $password)
 			: (bool) preg_match('/^[-a-z0-9#@_]++$/iD', (string) $password);
-	}
-
-	/*
-	* Creates a random int value for a username that isn't already represented in the database
-	*/
-	public function random_username()
-	{
-		while ($random = mt_rand(1000,mt_getrandmax()))
-		{
-			$find_username = ORM::factory('user')->where('username',$random)->count_all();
-			if ($find_username == 0)
-			{
-				return $random;
-			}
-		}
-
-		return FALSE;
 	}
 
 

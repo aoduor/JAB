@@ -51,29 +51,10 @@ class Themes_Core {
 	 */
 	public function header_block()
 	{
-		$content = Kohana::config("globalcode.head").
+		return Kohana::config("globalcode.head").
 			$this->_header_css().
 			$this->_header_feeds().
 			$this->_header_js();
-
-		// Filter::header_block - Modify Header Block
-		Event::run('ushahidi_filter.header_block', $content);
-
-		return $content;
-	}
-
-	/**
-	* Admin Header Block
-	*   The admin header has different requirements so it has a special function
-	*/
-	public function admin_header_block()
-	{
-		$content = Kohana::config("globalcode.head");
-
-		// Filter::admin_header_block - Modify Admin Header Block
-		Event::run('ushahidi_filter.admin_header_block', $content);
-
-		return $content;
 	}
 
 	/**
@@ -195,9 +176,9 @@ class Themes_Core {
 
 		if ($this->editor_enabled)
 		{
-			$core_js .= html::script($this->js_url."media/js/jwysiwyg/jwysiwyg/jquery.wysiwyg.js");
+			$core_js .= html::script($this->js_url."media/js/htmlbox/htmlbox.min.js");
 		}
-
+	
 		// Javascript files from plugins
 		$plugin_js = plugin::render('javascript');
 
@@ -233,24 +214,6 @@ function runScheduler(img){img.onload = null;img.src = '".url::site().'scheduler
 		}
 
 		return $feeds;
-	}
-
-	/**
-	 * Footer Block potentially holds tracking codes or other code that needs
-	 * to run in the footer
-	 */
-	public function footer_block()
-	{
-		$content = Kohana::config("globalcode.foot").
-				$this->google_analytics()."\n".
-				$this->ushahidi_stats_js()."\n".
-				$this->cdn_gradual_upgrade()."\n".
-				$this->scheduler_js();
-
-		// Filter::footer_block - Modify Footer Block
-		Event::run('ushahidi_filter.footer_block', $content);
-
-		return $content;
 	}
 
 	public function languages()
@@ -350,59 +313,19 @@ function runScheduler(img){img.onload = null;img.src = '".url::site().'scheduler
 	* @param text mixed	 Input google analytics web property ID.
 	* @return mixed	 Return google analytics HTML code.
 	*/
-	public function google_analytics()
+	public function google_analytics($google_analytics = false)
 	{
 		$html = "";
-		if (Kohana::config('settings.google_analytics') == TRUE) {
+		if (!empty($google_analytics)) {
 			$html = "<script type=\"text/javascript\">
-
-			var _gaq = _gaq || [];
-			_gaq.push(['_setAccount', '".Kohana::config('settings.google_analytics')."']);
-			_gaq.push(['_trackPageview']);
-
-			(function() {
-			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-			})();
-
-			</script>";
+				var gaJsHost = ((\"https:\" == document.location.protocol) ? \"https://ssl.\" : \"http://www.\");
+				document.write(unescape(\"%3Cscript src='\" + gaJsHost + \"google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E\"));
+				</script>
+				<script type=\"text/javascript\">
+				var pageTracker = _gat._getTracker(\"" . $google_analytics . "\");
+				pageTracker._trackPageview();
+				</script>";
 		}
 		return $html;
-	}
-
-	/*
-	* Scheduler JS Call
-	*/
-	public function scheduler_js()
-	{
-		return '<!-- Task Scheduler --><script type="text/javascript">$(document).ready(function(){$(\'#schedulerholder\').html(\'<img src="'.url::base().'scheduler" />\');});</script><div id="schedulerholder"></div><!-- End Task Scheduler -->';
-	}
-
-	/*
-	* CDN Gradual Upgrade JS Call
-	*   This upgrader pushes files from local server to the CDN in a gradual fashion so there doesn't need to
-	*   be any downtime when a deployer makes the switch to a CDN
-	*/
-	public function cdn_gradual_upgrade()
-	{
-		if (Kohana::config('cdn.cdn_gradual_upgrade') != FALSE)
-		{
-			return cdn::gradual_upgrade();
-		}
-		return '';
-	}
-
-	/*
-	* Ushahidi Stats JS Call
-	*    If a deployer is using Ushahidi to track their stats, this is the JS call for that
-	*/
-	public function ushahidi_stats_js()
-	{
-		if (Kohana::config('settings.allow_stat_sharing') == 1)
-		{
-			return Stats_Model::get_javascript();
-		}
-		return '';
 	}
 }

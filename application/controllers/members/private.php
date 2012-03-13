@@ -171,8 +171,8 @@ class Private_Controller extends Members_Controller {
 		$form_error = FALSE;
 		$form_saved = FALSE;
 		
-		$form['private_to'] = (isset($_GET['to']) AND ! empty($_GET['to'])) ? html::specialchars($_GET['to']) : "";
-		$form['parent_id'] = (isset($_GET['p']) AND ! empty($_GET['p'])) ? html::specialchars($_GET['p']) : "";
+		$form['private_to'] = (isset($_GET['to']) AND ! empty($_GET['to'])) ? $_GET['to'] : "";
+		$form['parent_id'] = (isset($_GET['p']) AND ! empty($_GET['p'])) ? $_GET['p'] : "";
 		
 		// check, has the form been submitted, if so, setup validation
 		if ($_POST)
@@ -267,7 +267,6 @@ class Private_Controller extends Members_Controller {
 	 */ 
 	public function get_user()
 	{
-		$db = Database::instance();
 		$this->template = "";
 		$this->auto_render = FALSE;
 		
@@ -275,7 +274,11 @@ class Private_Controller extends Members_Controller {
 		
 		if ($name)
 		{
-			$users = $db->query("SELECT * from users where id != ? AND LOWER(name) LIKE ?",$this->user->id,$name);
+			$users = ORM::factory("user")
+				->where("id !=".$this->user->id) 
+				->where("LOWER(name) LIKE '%".$name."%'")
+				->find_all();
+				
 			foreach ($users as $user)
 			{
 				echo "$user->name\n";

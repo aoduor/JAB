@@ -183,18 +183,17 @@
 
 			                    <div class="report_category">
                         	    <?php
-									$selected_categories = array();
-									if (!empty($form['incident_category']) && is_array($form['incident_category'])) {
-										$selected_categories = $form['incident_category'];
-									}
-									$columns = 2;
-									echo category::tree($categories, $selected_categories, 'incident_category', $columns);
-								?>
-           						</div>
+															$selected_categories = array();
+															if (!empty($form['incident_category']) && is_array($form['incident_category'])) {
+																$selected_categories = $form['incident_category'];
+															}
+															$columns = 2;
+															echo category::tree($categories, $selected_categories, 'incident_category', $columns);
+															?>
+			                       								</div>
 							</div>
-
+							
 						<?php echo $custom_forms; ?>
-
 						</div>
 						<!-- f-col-1 -->
 						<div class="f-col-1">

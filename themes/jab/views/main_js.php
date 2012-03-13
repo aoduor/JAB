@@ -1067,7 +1067,7 @@
 					else
 					{
 						// Show image
-						$('div.#check.report.col-'+i%5+'').append("<div class=\"report-image\"><img src=\""+item.media[0].thumb+"\" width=\"160\" /></div>");
+						$('div#check.report.col-'+i%5+'').append("<div class=\"report-image\"><a href=\""+item.media[0].link+"\" rel=\"lightbox-group1\" title=\""+item.msg+"\"><img src=\""+item.media[0].thumb+"\" width=\"160\" /></a></div>");
 					}
 					
 					$.each(data.payload.users, function(j,useritem){
@@ -1082,7 +1082,7 @@
 					{
 						$('div#check.report.col-'+i%5+'').append("<div class=\"report-location\"><small><em>"+$.timeago(utcDate)+"</em></small></div>");
 					}else{
-						$('div#check.report.col-'+i%5+'').append("<div class=\"report-location\"><a href=\"javascript:externalZeroIn("+item.lon+","+item.lat+",16,"+item.id+");\">"+item.msg+"</a><br/><small><em>"+$.timeago(utcDate)+"</em></small></div>");
+						$('div#check.report.col-'+i%5+'').append("<div class=\"report-location\" style=\"max-width:160px; max-height:76px;\"><a href=\"javascript:externalZeroIn("+item.lon+","+item.lat+",16,"+item.id+");\">"+item.msg+"</a><br/><small><em>"+$.timeago(utcDate)+"</em></small></div>");
 					}
 					
 					if(item.comments !== undefined)

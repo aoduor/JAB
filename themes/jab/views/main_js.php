@@ -1047,6 +1047,9 @@
 					return;
 				}
 				
+				$('div#checkins').html("");
+				$('div#checkins').append("<h5>Checkins</h5>");
+				
 				var user_colors = new Array();
 				// Get colors
 				$.each(data.payload.users, function(i, payl) {

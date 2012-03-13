@@ -170,16 +170,22 @@ class ReportsImporter {
 		$this->incidents_added[] = $incident->id;
 		
 		// STEP 3: SAVE CATEGORIES
-		// If CATEGORIES column exists
+		// If CATEGORY column exists
 		if (isset($row['CATEGORY']))
 		{
 			$categorynames = explode(',',trim($row['CATEGORY']));
 			// Add categories to incident
 			foreach ($categorynames as $categoryname)
 			{
-				$categoryname = trim($categoryname); 
-				// Empty categoryname not allowed
-				if ($categoryname != '')
+				// There seems to be an uppercase convention for categories... Don't know why
+				$categoryname = strtoupper(trim($categoryname));
+				
+				// For purposes of adding an entry into the incident_category table
+				$incident_category = new Incident_Category_Model();
+				$incident_category->incident_id = $incident->id; 
+				
+				// If category name exists, add entry in incident_category table
+				if ($row['CATEGORY'] != '')
 				{
 					if (!isset($this->category_ids[$categoryname]))
 					{
@@ -198,43 +204,40 @@ class ReportsImporter {
 						// Now category_id is known: This time, and for the rest of the import.
 						$this->category_ids[$categoryname] = $category->id; 
 					}
-					$incident_category = new Incident_Category_Model();
-					$incident_category->incident_id = $incident->id;
 					$incident_category->category_id = $this->category_ids[$categoryname];
 					$incident_category->save();
 					$this->incident_categories_added[] = $incident_category->id;
-				} 
-			}
-		}
-		
-		// STEP 4: SAVE MEDIA
-		// a. News
-		if ( ! empty($row['NEWS']))
-		{
-			$news = new Media_Model();
-			$news->location_id = $incident->location_id;
-			$news->incident_id = $incident->id;
-			$news->media_type = 4;		// News
-			$news->media_link = $row['NEWS'];
-			$news->media_date = $incident->incident_date;
-			$news->save();
-			$this->media_added[] = $news->id;
-		}
+				}
+				
+				else
+				{
+					// Unapprove the report
+					$incident_update = ORM::factory('incident',$incident->id);
+					$incident_update->incident_active = 0;
+					$incident_update->save();
 
-		// b. Video
-		if ( ! empty($row['VIDEO']))
-		{
-			$video = new Media_Model();
-			$video->location_id = $incident->location_id;
-			$video->incident_id = $incident->id;
-			$video->media_type = 2;		// Video
-			$video->media_link = $row['VIDEO'];
-			$video->media_date = $incident->incident_date;
-			$video->save();
-			$this->media_added[] = $video->id;
+					// Assign reports to special category for orphaned reports: NONE
+					$incident_category->category_id = '5';
+					$incident_category->save();
+				}	
+			} 
 		}
 		
-		return true;
+		// If CATEGORY column doesn't exist, 
+		else
+		{
+			// Unapprove the report
+			$incident_update = ORM::factory('incident',$incident->id);
+			$incident_update->incident_active = 0;
+			$incident_update->save();
+			
+			// Assign reports to special category for orphaned reports: NONE
+			$incident_category = new Incident_Category_Model();
+			$incident_category->incident_id = $incident->id;
+			$incident_category->category_id = '5';
+			$incident_category->save();
+		} 
+	return true;
 	}
 }
 

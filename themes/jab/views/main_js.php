@@ -1041,7 +1041,7 @@
 						var newoffset = sqloffset - sqllimit;
 						$('div#checkins').html("<div style=\"text-align:center;\"><?php echo Kohana::lang('ui_main.no_checkins'); ?><br/><br/><a href=\"javascript:cilisting("+sqllimit+","+newoffset+");\">&lt;&lt; <?php echo Kohana::lang('ui_main.previous'); ?></a></div>");
 					}else{
-						$('div#checkins').html("<div style=\"text-align:center;\">No checkins to display.</div>");
+						$('div#checkins').html("<h5>Checkins</h5><div style=\"text-align:center;\">No checkins to display.</div>");
 					}
 
 					return;

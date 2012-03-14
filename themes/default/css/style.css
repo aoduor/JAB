@@ -562,7 +562,7 @@ div.content-block h5 span {
 div.content-block img {
     /*Flexible image size with border*/
     width: 89%;     /*Took 1% off of the width to prevent IE6 bug*/
-    padding: 5%;
+	height: 100%;
     background:#fff;
     margin: 0 auto;
     display: block;
